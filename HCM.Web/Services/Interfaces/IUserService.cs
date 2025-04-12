@@ -1,9 +1,12 @@
 ﻿using HCM.Web.Areas.Admin.ViewModels;
+using HCM.Web.Data.Models;
 
 namespace HCM.Web.Services.Interfaces
 {
 	public interface IUserService
 	{
 		Task<IEnumerable<UserViewModel>> GetAllUsersAsync();
+
+		ApplicationUser CreateUser(EmployeeFormModel model);
 	}
 }

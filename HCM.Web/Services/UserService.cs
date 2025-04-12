@@ -43,5 +43,21 @@ namespace HCM.Web.Services
 
 			return userViewModels;
 		}
+
+		public ApplicationUser CreateUser(EmployeeFormModel model)
+		{
+			ApplicationUser employee = new ApplicationUser()
+			{
+				FirstName = model.FirstName,
+				LastName = model.LastName,
+				UserName = model.Username,
+				Email = model.Email,
+				JobTitleId = model.JobTitleId,
+				DepartmentId = model.DepartmentId,
+				Salary = model.Salary
+			};
+
+			return employee;
+		}
 	}
 }

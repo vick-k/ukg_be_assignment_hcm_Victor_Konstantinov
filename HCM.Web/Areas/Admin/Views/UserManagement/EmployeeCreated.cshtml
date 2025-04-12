@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Employee Created";
+}
+
+<h2>Employee Created Successfully</h2>
+
+<p>The password for the employee <strong>@TempData["Username"]</strong> is:</p>
+<div class="alert alert-info fw-bold">
+    @TempData["GeneratedPassword"]
+</div>
+
+<a asp-action="Index" class="btn btn-primary">Back to List</a>
