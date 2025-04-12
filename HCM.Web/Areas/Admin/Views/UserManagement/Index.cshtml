@@ -18,6 +18,8 @@
 <div class="container mt-5">
 	<h1 class="text-center mb-4">@ViewData["Title"]</h1>
 
+	<a asp-controller="UserManagement" asp-action="Create" class="btn btn-success mb-2">Create New Employee</a>
+
 	<table class="table table-bordered table-hover">
 		<caption>Total users: @Model.Count()</caption>
 		<thead>

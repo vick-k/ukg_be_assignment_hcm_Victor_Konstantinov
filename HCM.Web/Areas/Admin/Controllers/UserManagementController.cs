@@ -9,7 +9,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 {
 	[Area("Admin")]
 	[Authorize(Roles = AdminRoleName)]
-	public class UserManagementController(IUserService userService) : Controller
+	public class UserManagementController(IUserService userService, IJobTitleService jobTitleService, IDepartmentService departmentService) : Controller
 	{
 		[HttpGet]
 		public async Task<IActionResult> Index()
@@ -17,6 +17,21 @@ namespace HCM.Web.Areas.Admin.Controllers
 			IEnumerable<UserViewModel> users = await userService.GetAllUsersAsync();
 
 			return View(users);
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> Create()
+		{
+			IEnumerable<JobTitleListModel> jobTitles = await jobTitleService.GetAllJobTitlesForListAsync();
+			IEnumerable<DepartmentListModel> departments = await departmentService.GetAllDepartmentsForListAsync();
+
+			EmployeeFormModel model = new EmployeeFormModel()
+			{
+				JobTitles = jobTitles,
+				Departments = departments
+			};
+
+			return View(model);
 		}
 	}
 }

@@ -10,6 +10,8 @@ namespace HCM.Web.Extensions
 		{
 			services.AddScoped<IBaseService, BaseService>();
 			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<IJobTitleService, JobTitleService>();
+			services.AddScoped<IDepartmentService, DepartmentService>();
 
 			return services;
 		}
