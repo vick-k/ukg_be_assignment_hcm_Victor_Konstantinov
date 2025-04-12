@@ -23,6 +23,7 @@ namespace HCM.Web.Data.Models
 		[MaxLength(LastNameMaxLength)]
 		public string LastName { get; set; } = null!;
 
+		[Precision(18, 2)]
 		[Comment("The current salary of the employee")]
 		public decimal Salary { get; set; }
 
