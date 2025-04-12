@@ -16,10 +16,15 @@
 
 		public static class ApplicationUser
 		{
-			public const int FirstNameMinLength = 1;
+			public const int FirstNameMinLength = 2;
 			public const int FirstNameMaxLength = 50;
-			public const int LastNameMinLength = 1;
+			public const int LastNameMinLength = 2;
 			public const int LastNameMaxLength = 80;
+			public const int UsernameMinLength = 3;
+			public const int UsernameMaxLength = 20;
+			public const int EmailMaxLength = 50;
+			public const string SalaryMinValue = "500";
+			public const string SalaryMaxValue = "100000";
 		}
 	}
 }
