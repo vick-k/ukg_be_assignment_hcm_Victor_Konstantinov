@@ -4,6 +4,8 @@ using HCM.Web.Data.Models;
 using HCM.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
+using static HCM.Web.Common.ApplicationConstants;
+
 namespace HCM.Web.Services
 {
 	public class UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext) : BaseService, IUserService
@@ -30,10 +32,10 @@ namespace HCM.Web.Services
 				userViewModels.Add(new UserViewModel
 				{
 					Id = user.Id.ToString(),
-					Username = user.UserName,
+					Username = user.UserName!,
 					FirstName = user.FirstName,
 					LastName = user.LastName,
-					Email = user.Email,
+					Email = user.Email!,
 					Salary = user.Salary,
 					JobTitle = user.JobTitle.Name,
 					Department = user.Department.Name,
@@ -44,7 +46,7 @@ namespace HCM.Web.Services
 			return userViewModels;
 		}
 
-		public ApplicationUser CreateUser(EmployeeFormModel model)
+		public async Task<bool> CreateUserAsync(EmployeeFormModel model, string password)
 		{
 			ApplicationUser employee = new ApplicationUser()
 			{
@@ -57,7 +59,16 @@ namespace HCM.Web.Services
 				Salary = model.Salary
 			};
 
-			return employee;
+			IdentityResult result = await userManager.CreateAsync(employee, password);
+
+			if (result.Succeeded)
+			{
+				await userManager.AddToRoleAsync(employee, UserRoleName);
+
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

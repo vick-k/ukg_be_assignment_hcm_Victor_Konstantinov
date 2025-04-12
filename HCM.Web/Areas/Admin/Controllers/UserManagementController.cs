@@ -11,7 +11,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 {
 	[Area("Admin")]
 	[Authorize(Roles = AdminRoleName)]
-	public class UserManagementController(IUserService userService, IJobTitleService jobTitleService, IDepartmentService departmentService, UserManager<ApplicationUser> userManager) : Controller
+	public class UserManagementController(IUserService userService, IJobTitleService jobTitleService, IDepartmentService departmentService) : Controller
 	{
 		[HttpGet]
 		public async Task<IActionResult> Index()
@@ -47,27 +47,22 @@ namespace HCM.Web.Areas.Admin.Controllers
 				return View(model);
 			}
 
-			ApplicationUser employee = userService.CreateUser(model);
-
 			string password = GenerateSecurePassword();
 
-			IdentityResult result = await userManager.CreateAsync(employee, password);
+			bool result = await userService.CreateUserAsync(model, password);
 
-			if (result.Succeeded)
+			if (!result)
 			{
-				await userManager.AddToRoleAsync(employee, UserRoleName);
-				TempData["GeneratedPassword"] = password;
-				TempData["Username"] = employee.UserName;
+				model.JobTitles = await jobTitleService.GetAllJobTitlesForListAsync();
+				model.Departments = await departmentService.GetAllDepartmentsForListAsync();
 
-				return RedirectToAction("EmployeeCreated");
+				return View(model);
 			}
 
-			foreach (var error in result.Errors)
-			{
-				ModelState.AddModelError(string.Empty, error.Description);
-			}
+			TempData["GeneratedPassword"] = password;
+			TempData["Username"] = model.Username;
 
-			return View(model);
+			return RedirectToAction("EmployeeCreated");
 		}
 
 		[HttpGet]
