@@ -70,5 +70,59 @@ namespace HCM.Web.Services
 
 			return false;
 		}
+
+		public async Task<EmployeeFormModel> GetEmployeeForEditAsync(string id)
+		{
+			ApplicationUser? employee = userManager.Users
+				.FirstOrDefault(u => u.Id.ToString() == id);
+
+			EmployeeFormModel model = new EmployeeFormModel();
+
+			if (employee != null)
+			{
+				model.Id = employee.Id.ToString();
+				model.FirstName = employee.FirstName;
+				model.LastName = employee.LastName;
+				model.Username = employee.UserName!;
+				model.Email = employee.Email!;
+				model.Salary = employee.Salary;
+				model.JobTitleId = employee.JobTitleId;
+				model.DepartmentId = employee.DepartmentId;
+			}
+			else
+			{
+				model = null!;
+			}
+
+			return model;
+		}
+
+		public async Task<bool> EditUserAsync(EmployeeFormModel model)
+		{
+			ApplicationUser? employee = userManager.Users
+				.FirstOrDefault(u => u.Id.ToString() == model.Id);
+
+			if (employee == null)
+			{
+				return false;
+			}
+
+			employee.FirstName = model.FirstName;
+			employee.LastName = model.LastName;
+			employee.UserName = model.Username;
+			employee.Email = model.Email;
+			employee.Salary = model.Salary;
+			employee.JobTitleId = model.JobTitleId;
+			employee.DepartmentId = model.DepartmentId;
+
+			IdentityResult result = await userManager.UpdateAsync(employee);
+
+			if (result.Succeeded)
+			{
+				return true;
+			}
+
+			return false;
+		}
 	}
 }

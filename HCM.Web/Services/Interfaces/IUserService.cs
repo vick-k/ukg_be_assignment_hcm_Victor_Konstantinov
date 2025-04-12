@@ -8,5 +8,9 @@ namespace HCM.Web.Services.Interfaces
 		Task<IEnumerable<UserViewModel>> GetAllUsersAsync();
 
 		Task<bool> CreateUserAsync(EmployeeFormModel model, string password);
+
+		Task<EmployeeFormModel> GetEmployeeForEditAsync(string id);
+
+		Task<bool> EditUserAsync(EmployeeFormModel model);
 	}
 }

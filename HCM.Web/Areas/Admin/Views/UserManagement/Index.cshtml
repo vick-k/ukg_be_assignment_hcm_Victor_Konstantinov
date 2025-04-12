@@ -16,6 +16,14 @@
 }
 
 <div class="container mt-5">
+	@if (TempData["SuccessMessage"] != null)
+	{
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			<i class="bi-info-circle me-2"></i>@TempData["SuccessMessage"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
+
 	<h1 class="text-center mb-4">@ViewData["Title"]</h1>
 
 	<a asp-controller="UserManagement" asp-action="Create" class="btn btn-success mb-2">Create New Employee</a>

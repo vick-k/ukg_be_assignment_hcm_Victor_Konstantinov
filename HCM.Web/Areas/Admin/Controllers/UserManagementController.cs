@@ -11,7 +11,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 {
 	[Area("Admin")]
 	[Authorize(Roles = AdminRoleName)]
-	public class UserManagementController(IUserService userService, IJobTitleService jobTitleService, IDepartmentService departmentService) : Controller
+	public class UserManagementController(IBaseService baseService, IUserService userService, IJobTitleService jobTitleService, IDepartmentService departmentService) : Controller
 	{
 		[HttpGet]
 		public async Task<IActionResult> Index()
@@ -69,6 +69,67 @@ namespace HCM.Web.Areas.Admin.Controllers
 		public IActionResult EmployeeCreated()
 		{
 			return View();
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> Edit(string id)
+		{
+			Guid userGuid = Guid.Empty;
+			bool isGuidValid = baseService.IsGuidValid(id, ref userGuid);
+
+			if (!isGuidValid)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			EmployeeFormModel model = await userService.GetEmployeeForEditAsync(id);
+
+			if (model == null)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			IEnumerable<JobTitleListModel> jobTitles = await jobTitleService.GetAllJobTitlesForListAsync();
+			IEnumerable<DepartmentListModel> departments = await departmentService.GetAllDepartmentsForListAsync();
+
+			model.JobTitles = jobTitles;
+			model.Departments = departments;
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Edit(EmployeeFormModel model)
+		{
+			Guid userGuid = Guid.Empty;
+			bool isGuidValid = baseService.IsGuidValid(model.Id, ref userGuid);
+
+			if (!isGuidValid || model.Id == null)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			if (!ModelState.IsValid)
+			{
+				model.JobTitles = await jobTitleService.GetAllJobTitlesForListAsync();
+				model.Departments = await departmentService.GetAllDepartmentsForListAsync();
+
+				return View(model);
+			}
+
+			bool result = await userService.EditUserAsync(model);
+
+			if (!result)
+			{
+				model.JobTitles = await jobTitleService.GetAllJobTitlesForListAsync();
+				model.Departments = await departmentService.GetAllDepartmentsForListAsync();
+
+				return View(model);
+			}
+
+			TempData["SuccessMessage"] = "Employee updated successfully.";
+
+			return RedirectToAction(nameof(Index));
 		}
 
 		private string GenerateSecurePassword()
