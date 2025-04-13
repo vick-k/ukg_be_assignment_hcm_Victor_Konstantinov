@@ -10,18 +10,32 @@ using static HCM.Web.Common.ApplicationConstants;
 namespace HCM.Web.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-	[Authorize(Roles = AdminRoleName)]
 	public class UserManagementController(IBaseService baseService, IUserService userService, IJobTitleService jobTitleService, IDepartmentService departmentService, UserManager<ApplicationUser> userManager) : Controller
 	{
 		[HttpGet]
+		[Authorize(Roles = $"{AdminRoleName},{ManagerRoleName}")]
 		public async Task<IActionResult> Index()
 		{
+			if (User.IsInRole(ManagerRoleName))
+			{
+				ApplicationUser? user = await userManager.FindByNameAsync(User.Identity!.Name!);
+
+				if (user != null)
+				{
+					int departmentId = user.DepartmentId;
+					IEnumerable<UserViewModel> departmentUsers = await userService.GetAllUsersFromDepartmentAsync(departmentId);
+
+					return View(departmentUsers);
+				}
+			}
+
 			IEnumerable<UserViewModel> users = await userService.GetAllUsersAsync();
 
 			return View(users);
 		}
 
 		[HttpGet]
+		[Authorize(Roles = AdminRoleName)]
 		public async Task<IActionResult> Create()
 		{
 			IEnumerable<JobTitleListModel> jobTitles = await jobTitleService.GetAllJobTitlesForListAsync();
@@ -37,6 +51,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = AdminRoleName)]
 		public async Task<IActionResult> Create(EmployeeFormModel model)
 		{
 			if (!ModelState.IsValid)
@@ -66,6 +81,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 		}
 
 		[HttpGet]
+		[Authorize(Roles = AdminRoleName)]
 		public IActionResult EmployeeCreated()
 		{
 			return View();
@@ -87,6 +103,16 @@ namespace HCM.Web.Areas.Admin.Controllers
 			if (model == null)
 			{
 				return RedirectToAction(nameof(Index));
+			}
+
+			if (User.IsInRole(ManagerRoleName))
+			{
+				ApplicationUser? user = await userManager.FindByNameAsync(User.Identity!.Name!);
+
+				if (user != null && user.DepartmentId != model.DepartmentId)
+				{
+					return RedirectToAction(nameof(Index));
+				}
 			}
 
 			IEnumerable<JobTitleListModel> jobTitles = await jobTitleService.GetAllJobTitlesForListAsync();
@@ -133,6 +159,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = AdminRoleName)]
 		public async Task<IActionResult> DeleteUser(string userId)
 		{
 			Guid userGuid = Guid.Empty;
@@ -165,6 +192,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = AdminRoleName)]
 		public async Task<IActionResult> AssignRole(string userId, string role)
 		{
 			Guid userGuid = Guid.Empty;
@@ -188,6 +216,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = AdminRoleName)]
 		public async Task<IActionResult> RemoveRole(string userId, string role)
 		{
 			Guid userGuid = Guid.Empty;

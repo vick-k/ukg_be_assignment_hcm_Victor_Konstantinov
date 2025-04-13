@@ -48,6 +48,43 @@ namespace HCM.Web.Services
 			return userViewModels;
 		}
 
+		public async Task<IEnumerable<UserViewModel>> GetAllUsersFromDepartmentAsync(int departmentId)
+		{
+			List<ApplicationUser> users = await userManager.Users
+				.Where(u => u.IsDeleted == false && u.DepartmentId == departmentId)
+				.ToListAsync();
+
+			List<UserViewModel> userViewModels = new List<UserViewModel>();
+
+			foreach (ApplicationUser user in users)
+			{
+				IList<string> roles = await userManager.GetRolesAsync(user);
+
+				await dbContext.Entry(user)
+					.Reference(u => u.JobTitle)
+					.LoadAsync();
+
+				await dbContext.Entry(user)
+					.Reference(u => u.Department)
+					.LoadAsync();
+
+				userViewModels.Add(new UserViewModel
+				{
+					Id = user.Id.ToString(),
+					Username = user.UserName!,
+					FirstName = user.FirstName,
+					LastName = user.LastName,
+					Email = user.Email!,
+					Salary = user.Salary,
+					JobTitle = user.JobTitle.Name,
+					Department = user.Department.Name,
+					Roles = roles.ToList()
+				});
+			}
+
+			return userViewModels;
+		}
+
 		public async Task<bool> CreateUserAsync(EmployeeFormModel model, string password)
 		{
 			ApplicationUser employee = new ApplicationUser()
