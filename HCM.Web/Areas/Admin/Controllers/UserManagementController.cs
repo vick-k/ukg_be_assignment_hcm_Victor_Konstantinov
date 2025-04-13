@@ -88,6 +88,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 		}
 
 		[HttpGet]
+		[Authorize(Roles = $"{AdminRoleName},{ManagerRoleName}")]
 		public async Task<IActionResult> Edit(string id)
 		{
 			Guid userGuid = Guid.Empty;
@@ -125,6 +126,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = $"{AdminRoleName},{ManagerRoleName}")]
 		public async Task<IActionResult> Edit(EmployeeFormModel model)
 		{
 			Guid userGuid = Guid.Empty;
@@ -133,6 +135,16 @@ namespace HCM.Web.Areas.Admin.Controllers
 			if (!isGuidValid || model.Id == null)
 			{
 				return RedirectToAction(nameof(Index));
+			}
+
+			if (User.IsInRole(ManagerRoleName))
+			{
+				ApplicationUser? user = await userManager.FindByNameAsync(User.Identity!.Name!);
+
+				if (user != null && user.DepartmentId != model.DepartmentId)
+				{
+					return RedirectToAction(nameof(Index));
+				}
 			}
 
 			if (!ModelState.IsValid)
