@@ -16,6 +16,8 @@ namespace HCM.Web.Data.Models
 		[MaxLength(NameMaxLength)]
 		public string Name { get; set; } = null!;
 
+		public bool IsDeleted { get; set; }
+
 		public virtual ICollection<ApplicationUser> Employees { get; set; } = new HashSet<ApplicationUser>();
 	}
 }
