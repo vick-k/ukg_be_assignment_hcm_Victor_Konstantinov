@@ -118,9 +118,16 @@ namespace HCM.Web.Areas.Identity.Pages.Account
 				var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 				if (result.Succeeded)
 				{
-					_logger.LogInformation("User logged in.");
-
 					ApplicationUser user = await _userManager.FindByNameAsync(Input.Username);
+
+					if (user != null && user.IsDeleted)
+					{
+						await _signInManager.SignOutAsync();
+
+						return RedirectToPage();
+					}
+
+					_logger.LogInformation("User logged in.");
 
 					if (user != null)
 					{
