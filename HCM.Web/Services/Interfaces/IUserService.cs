@@ -16,5 +16,9 @@ namespace HCM.Web.Services.Interfaces
 		Task<ApplicationUser?> GetUserAsync(string username);
 
 		Task<bool> DeleteUserAsync(string id);
+
+		Task<bool> AssignUserToRoleAsync(string userId, string roleName);
+
+		Task<bool> RemoveUserRoleAsync(string currentUserId, string userId, string roleName);
 	}
 }

@@ -4,11 +4,12 @@ using HCM.Web.Data.Models;
 using HCM.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 using static HCM.Web.Common.ApplicationConstants;
 
 namespace HCM.Web.Services
 {
-	public class UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext) : BaseService, IUserService
+	public class UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, ApplicationDbContext dbContext) : BaseService, IUserService
 	{
 		public async Task<IEnumerable<UserViewModel>> GetAllUsersAsync()
 		{
@@ -152,6 +153,61 @@ namespace HCM.Web.Services
 			}
 
 			return false;
+		}
+
+		public async Task<bool> AssignUserToRoleAsync(string userId, string roleName)
+		{
+			ApplicationUser? user = await userManager.FindByIdAsync(userId);
+			bool roleExists = await roleManager.RoleExistsAsync(roleName);
+
+			if (user == null || user.IsDeleted || roleExists == false)
+			{
+				return false;
+			}
+
+			bool alreadyInRole = await userManager.IsInRoleAsync(user, roleName);
+
+			if (alreadyInRole == false)
+			{
+				IdentityResult result = await userManager.AddToRoleAsync(user, roleName);
+
+				if (result.Succeeded == false)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public async Task<bool> RemoveUserRoleAsync(string currentUserId, string userId, string roleName)
+		{
+			ApplicationUser? user = await userManager.FindByIdAsync(userId);
+			bool roleExists = await roleManager.RoleExistsAsync(roleName);
+
+			if (user == null || user.IsDeleted || roleExists == false)
+			{
+				return false;
+			}
+
+			bool alreadyInRole = await userManager.IsInRoleAsync(user, roleName);
+
+			if (alreadyInRole)
+			{
+				if (roleName == AdminRoleName && userId == currentUserId)
+				{
+					return false;
+				}
+
+				IdentityResult result = await userManager.RemoveFromRoleAsync(user, roleName);
+
+				if (result.Succeeded == false)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 }

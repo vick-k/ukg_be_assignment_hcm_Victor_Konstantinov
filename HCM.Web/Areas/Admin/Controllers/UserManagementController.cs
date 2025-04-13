@@ -11,7 +11,7 @@ namespace HCM.Web.Areas.Admin.Controllers
 {
 	[Area("Admin")]
 	[Authorize(Roles = AdminRoleName)]
-	public class UserManagementController(IBaseService baseService, IUserService userService, IJobTitleService jobTitleService, IDepartmentService departmentService) : Controller
+	public class UserManagementController(IBaseService baseService, IUserService userService, IJobTitleService jobTitleService, IDepartmentService departmentService, UserManager<ApplicationUser> userManager) : Controller
 	{
 		[HttpGet]
 		public async Task<IActionResult> Index()
@@ -160,6 +160,59 @@ namespace HCM.Web.Areas.Admin.Controllers
 			}
 
 			TempData["SuccessMessage"] = "Employee deleted successfully.";
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> AssignRole(string userId, string role)
+		{
+			Guid userGuid = Guid.Empty;
+			bool isGuidValid = baseService.IsGuidValid(userId, ref userGuid);
+
+			if (!isGuidValid)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			bool result = await userService.AssignUserToRoleAsync(userId, role);
+
+			if (!result)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			TempData["SuccessMessage"] = "Role assigned successfully.";
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> RemoveRole(string userId, string role)
+		{
+			Guid userGuid = Guid.Empty;
+			bool isGuidValid = baseService.IsGuidValid(userId, ref userGuid);
+
+			if (!isGuidValid)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			if (string.IsNullOrEmpty(role))
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			string currentUserId = userManager.GetUserId(User)!;
+
+			bool result = await userService.RemoveUserRoleAsync(currentUserId, userId, role);
+
+			if (!result)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			TempData["SuccessMessage"] = "Role removed successfully.";
 
 			return RedirectToAction(nameof(Index));
 		}
