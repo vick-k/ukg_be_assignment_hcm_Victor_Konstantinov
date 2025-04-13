@@ -12,5 +12,9 @@ namespace HCM.Web.Services.Interfaces
 		Task<EmployeeFormModel> GetEmployeeForEditAsync(string id);
 
 		Task<bool> EditUserAsync(EmployeeFormModel model);
+
+		Task<ApplicationUser?> GetUserAsync(string username);
+
+		Task<bool> DeleteUserAsync(string id);
 	}
 }

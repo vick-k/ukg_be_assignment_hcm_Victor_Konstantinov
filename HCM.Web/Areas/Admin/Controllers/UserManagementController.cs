@@ -132,6 +132,38 @@ namespace HCM.Web.Areas.Admin.Controllers
 			return RedirectToAction(nameof(Index));
 		}
 
+		[HttpPost]
+		public async Task<IActionResult> DeleteUser(string userId)
+		{
+			Guid userGuid = Guid.Empty;
+			bool isGuidValid = baseService.IsGuidValid(userId, ref userGuid);
+
+			if (!isGuidValid)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			string adminUsername = User.Identity!.Name!;
+
+			ApplicationUser? admin = await userService.GetUserAsync(adminUsername);
+
+			if (admin != null && admin.Id.ToString() == userId)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			bool result = await userService.DeleteUserAsync(userId);
+
+			if (!result)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			TempData["SuccessMessage"] = "Employee deleted successfully.";
+
+			return RedirectToAction(nameof(Index));
+		}
+
 		private string GenerateSecurePassword()
 		{
 			PasswordOptions options = new PasswordOptions

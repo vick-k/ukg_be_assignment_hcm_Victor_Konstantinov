@@ -38,5 +38,7 @@ namespace HCM.Web.Data.Models
 		public int DepartmentId { get; set; }
 
 		public virtual Department Department { get; set; } = null!;
+
+		public bool IsDeleted { get; set; }
 	}
 }

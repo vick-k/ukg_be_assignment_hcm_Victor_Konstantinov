@@ -3,7 +3,7 @@ using HCM.Web.Data;
 using HCM.Web.Data.Models;
 using HCM.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-
+using Microsoft.EntityFrameworkCore;
 using static HCM.Web.Common.ApplicationConstants;
 
 namespace HCM.Web.Services
@@ -12,8 +12,9 @@ namespace HCM.Web.Services
 	{
 		public async Task<IEnumerable<UserViewModel>> GetAllUsersAsync()
 		{
-			List<ApplicationUser> users = userManager.Users
-				.ToList();
+			List<ApplicationUser> users = await userManager.Users
+				.Where(u => u.IsDeleted == false)
+				.ToListAsync();
 
 			List<UserViewModel> userViewModels = new List<UserViewModel>();
 
@@ -73,8 +74,9 @@ namespace HCM.Web.Services
 
 		public async Task<EmployeeFormModel> GetEmployeeForEditAsync(string id)
 		{
-			ApplicationUser? employee = userManager.Users
-				.FirstOrDefault(u => u.Id.ToString() == id);
+			ApplicationUser? employee = await userManager.Users
+				.Where(u => u.IsDeleted == false)
+				.FirstOrDefaultAsync(u => u.Id.ToString() == id);
 
 			EmployeeFormModel model = new EmployeeFormModel();
 
@@ -99,8 +101,9 @@ namespace HCM.Web.Services
 
 		public async Task<bool> EditUserAsync(EmployeeFormModel model)
 		{
-			ApplicationUser? employee = userManager.Users
-				.FirstOrDefault(u => u.Id.ToString() == model.Id);
+			ApplicationUser? employee = await userManager.Users
+				.Where(u => u.IsDeleted == false)
+				.FirstOrDefaultAsync(u => u.Id.ToString() == model.Id);
 
 			if (employee == null)
 			{
@@ -116,6 +119,32 @@ namespace HCM.Web.Services
 			employee.DepartmentId = model.DepartmentId;
 
 			IdentityResult result = await userManager.UpdateAsync(employee);
+
+			if (result.Succeeded)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		public async Task<ApplicationUser?> GetUserAsync(string username)
+		{
+			return await userManager.FindByNameAsync(username);
+		}
+
+		public async Task<bool> DeleteUserAsync(string id)
+		{
+			ApplicationUser? user = await userManager.FindByIdAsync(id);
+
+			if (user == null || user.IsDeleted)
+			{
+				return false;
+			}
+
+			user.IsDeleted = true;
+
+			IdentityResult result = await userManager.UpdateAsync(user);
 
 			if (result.Succeeded)
 			{
