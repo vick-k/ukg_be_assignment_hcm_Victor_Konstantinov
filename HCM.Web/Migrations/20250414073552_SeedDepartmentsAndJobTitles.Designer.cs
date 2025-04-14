@@ -4,6 +4,7 @@ using HCM.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HCM.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250414073552_SeedDepartmentsAndJobTitles")]
+    partial class SeedDepartmentsAndJobTitles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,74 +121,6 @@ namespace HCM.Web.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("21e27e05-cbee-44b0-88c2-0a6473769deb"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "ee4f6cc3-94f9-494c-b470-235d4c34fc96",
-                            DepartmentId = 4,
-                            Email = "i.ivanov@hcm.com",
-                            EmailConfirmed = false,
-                            FirstName = "Ivan",
-                            IsDeleted = false,
-                            JobTitleId = 3,
-                            LastName = "Ivanov",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "I.IVANOV@HCM.COM",
-                            NormalizedUserName = "IVAN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEiGyHne4+XmmPwsH1pKWpVKzh7KqSzppuHL001gpTOKjiHMPXlwVjXp7OBxdWjyWg==",
-                            PhoneNumberConfirmed = false,
-                            Salary = 1000m,
-                            SecurityStamp = "80390b3f-b152-4194-9dda-8b85400bbf69",
-                            TwoFactorEnabled = false,
-                            UserName = "ivan"
-                        },
-                        new
-                        {
-                            Id = new Guid("9835d1fa-775f-4396-b50e-5135a2112208"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "52b51e41-1efb-46f6-8f66-70f05076ad5c",
-                            DepartmentId = 6,
-                            Email = "p.petrov@hcm.com",
-                            EmailConfirmed = false,
-                            FirstName = "Peter",
-                            IsDeleted = false,
-                            JobTitleId = 5,
-                            LastName = "Petrov",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "P.PETROV@HCM.COM",
-                            NormalizedUserName = "PETER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEgrauZPwkipRnpUF8eqkFzSj8XginHoexlHYF+zbcs++SGN+RO3jYgpb3aNG1E82w==",
-                            PhoneNumberConfirmed = false,
-                            Salary = 2500m,
-                            SecurityStamp = "afc7ede9-4c46-48f1-80c7-a6c9bf7cbb7a",
-                            TwoFactorEnabled = false,
-                            UserName = "peter"
-                        },
-                        new
-                        {
-                            Id = new Guid("1211a2a3-dcd7-4a3d-be2d-aa8d07af4465"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "a88705e9-dbb8-49ea-b6dd-d45c9499a64a",
-                            DepartmentId = 6,
-                            Email = "g.georgiev@hcm.com",
-                            EmailConfirmed = false,
-                            FirstName = "George",
-                            IsDeleted = false,
-                            JobTitleId = 6,
-                            LastName = "Georgiev",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "G.GEORGIEV@HCM.COM",
-                            NormalizedUserName = "GEORGE",
-                            PasswordHash = "AQAAAAIAAYagAAAAELIzFatM08flQORp5H615yXvfhZh9KlZKutUaxQMQ3Bme8qWwZX+HQOwNCvrSnha7Q==",
-                            PhoneNumberConfirmed = false,
-                            Salary = 3500m,
-                            SecurityStamp = "5b670aa2-3db4-447c-9a0c-0e0514018da4",
-                            TwoFactorEnabled = false,
-                            UserName = "george"
-                        });
                 });
 
             modelBuilder.Entity("HCM.Web.Data.Models.Department", b =>

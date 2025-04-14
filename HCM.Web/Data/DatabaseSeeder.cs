@@ -34,11 +34,11 @@ namespace HCM.Web.Data
 			UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
 			string adminUserName = "admin";
-			string adminEmail = "admin@gmail.com";
+			string adminEmail = "admin@hcm.com";
 			string adminFirstName = "John";
 			string adminLastName = "Doe";
-			decimal adminSalary = 0m;
-			int adminJobTitleId = 1;
+			decimal adminSalary = 2000m;
+			int adminJobTitleId = 8;
 			int adminDepartmentId = 1;
 			string adminPassword = "Password1!";
 
@@ -74,6 +74,54 @@ namespace HCM.Web.Data
 				if (!addRoleResult.Succeeded)
 				{
 					throw new Exception($"Failed to assign admin role to user: {adminUserName}");
+				}
+			}
+		}
+
+		public static async Task AssignRoles(IServiceProvider serviceProvider)
+		{
+			UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+			ApplicationUser? ivan = await userManager.FindByNameAsync("ivan");
+			ApplicationUser? peter = await userManager.FindByNameAsync("peter");
+			ApplicationUser? george = await userManager.FindByNameAsync("george");
+
+			if (ivan != null)
+			{
+				if (!await userManager.IsInRoleAsync(ivan, UserRoleName))
+				{
+					IdentityResult result = await userManager.AddToRoleAsync(ivan, UserRoleName);
+
+					if (!result.Succeeded)
+					{
+						throw new Exception($"Failed to assign role to user: {ivan.UserName}");
+					}
+				}
+			}
+
+			if (peter != null)
+			{
+				if (!await userManager.IsInRoleAsync(peter, UserRoleName))
+				{
+					IdentityResult result = await userManager.AddToRoleAsync(peter, UserRoleName);
+
+					if (!result.Succeeded)
+					{
+						throw new Exception($"Failed to assign role to user: {peter.UserName}");
+					}
+				}
+			}
+
+			if (george != null)
+			{
+				if (!await userManager.IsInRoleAsync(george, ManagerRoleName))
+				{
+					IdentityResult result = await userManager.AddToRoleAsync(george, ManagerRoleName);
+
+					if (!result.Succeeded)
+					{
+						throw new Exception($"Failed to assign role to user: {george.UserName}");
+					}
 				}
 			}
 		}
