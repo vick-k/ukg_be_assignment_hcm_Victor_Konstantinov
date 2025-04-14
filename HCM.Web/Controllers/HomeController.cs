@@ -1,20 +1,33 @@
+using HCM.Web.Areas.Admin.ViewModels;
+using HCM.Web.Data.Models;
 using HCM.Web.Models;
+using HCM.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace HCM.Web.Controllers
 {
-	public class HomeController : Controller
+	public class HomeController(IUserService userService) : Controller
 	{
-		private readonly ILogger<HomeController> _logger;
-
-		public HomeController(ILogger<HomeController> logger)
+		public async Task<IActionResult> Index()
 		{
-			_logger = logger;
-		}
+			if (User?.Identity?.IsAuthenticated ?? false)
+			{
+				UserViewModel model = new UserViewModel();
+				ApplicationUser? user = await userService.GetUserAsync(User.Identity!.Name!);
 
-		public IActionResult Index()
-		{
+				if (user != null)
+				{
+					model.FirstName = user.FirstName;
+					model.LastName = user.LastName;
+					model.JobTitle = user.JobTitle.Name;
+					model.Department = user.Department.Name;
+					model.Salary = user.Salary;
+				}
+
+				return View(model);
+			}
+
 			return View();
 		}
 

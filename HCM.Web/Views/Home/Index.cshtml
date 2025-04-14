@@ -1,5 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using HCM.Web.Data.Models
+@using HCM.Web.Areas.Admin.ViewModels;
+@model UserViewModel
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
@@ -12,5 +14,31 @@
     @if (!SignInManager.IsSignedIn(User))
     {
         <a class="btn btn-primary mt-4" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    }
+    else
+    {
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h2 class="mb-0">Welcome, @Model.FirstName @Model.LastName!</h2>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Job Title</dt>
+                                <dd class="col-sm-8">@Model.JobTitle</dd>
+
+                                <dt class="col-sm-4">Department</dt>
+                                <dd class="col-sm-8">@Model.Department</dd>
+
+                                <dt class="col-sm-4">Salary</dt>
+                                <dd class="col-sm-8">@Model.Salary BGN</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 </div>

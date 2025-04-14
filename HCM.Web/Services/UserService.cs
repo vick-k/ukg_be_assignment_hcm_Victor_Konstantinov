@@ -168,7 +168,12 @@ namespace HCM.Web.Services
 
 		public async Task<ApplicationUser?> GetUserAsync(string username)
 		{
-			return await userManager.FindByNameAsync(username);
+			return await dbContext.Users
+				.Include(u => u.JobTitle)
+				.Include(u => u.Department)
+				.FirstOrDefaultAsync(u => u.UserName == username && u.IsDeleted == false);
+
+			//return await userManager.FindByNameAsync(username);
 		}
 
 		public async Task<bool> DeleteUserAsync(string id)
